@@ -1,5 +1,4 @@
 ﻿$(document).ready(function () {
-
     $('.glyphicon-calendar').closest("div.date").datepicker({
         todayBtn: "linked",
         keyboardNavigation: false,
@@ -7,7 +6,8 @@
         calendarWeeks: false,
         format: 'dd/mm/yyyy',
         autoclose: true,
-        language: 'pt-BR'
+        language: 'pt-BR',
+        startDate: new Date() // Definir data mínima como hoje
     });
 
     $('#btnCancelar').click(function () {
@@ -24,42 +24,90 @@
         });
     });
 
-    $('#btnSalvar').click(function () {
+    // Adicionando regra de validação para permitir somente texto
+    $.validator.addMethod("textoApenas", function (value, element) {
+        return /^[a-zA-Z\s'´`^,ãõáíéúêôç]*$/.test(value);
+    }, "Digite somente letras e espaços.");
 
-        if ($('#form').valid() != true) {
-            FormularioInvalidoAlert();
-            return;
+    $("#form").validate({
+        rules: {
+            Assunto: {
+                required: true,
+                maxlength: 30,
+                textoApenas: true
+            },
+            Solicitante: {
+                required: true,
+                maxlength: 30,
+                textoApenas: true
+            },
+            DataAbertura: {
+                required: true
+            },
+            IdDepartamento: {
+                required: true
+            }
+        },
+        messages: {
+            Assunto: {
+                required: "O campo Assunto é obrigatório.",
+                maxlength: "O campo Assunto não pode ter mais de 30 caracteres.",
+                textoApenas: "Digite somente letras e espaços e caracteres especiais."
+            },
+            Solicitante: {
+                required: "O campo Solicitante é obrigatório.",
+                maxlength: "O campo Solicitante não pode ter mais de 30 caracteres.",
+                textoApenas: "Digite somente letras e espaços e caracteres especiais."
+            },
+            DataAbertura: {
+                required: "O campo Data de Abertura é obrigatório."
+            },
+            IdDepartamento: {
+                required: "Selecione um Departamento."
+            }
         }
+    });
 
-        let chamado = SerielizeForm($('#form'));
-        let url = $('#form').attr('action');
-        //debugger;
+    // Desabilitar a edição direta do campo DataAbertura
+    $("input[name='DataAbertura']").attr("readonly", "readonly");
 
-        $.ajax({
-            type: "PUT",
-            url: url,
-            data: chamado,
-            success: function (result) {
-
-                Swal.fire({
-                    type: result.Type,
-                    title: result.Title,
-                    text: result.Message,
-                }).then(function () {
-                    window.location.href = config.contextPath + result.Controller + '/' + result.Action;
-                });
-
-            },
-            error: function (result) {
-
-                Swal.fire({
-                    text: result,
-                    confirmButtonText: 'OK',
-                    icon: 'error'
-                });
-
-            },
+    // Impedir a seleção da data no datepicker, exibindo mensagem ao clicar no ícone
+    $('.glyphicon-calendar, .clickable-label').click(function (e) {
+        e.preventDefault();
+        // Exibir o alerta personalizado
+        Swal.fire({
+            text: "Data da Abertura não pode ser alterada",
+            confirmButtonText: 'OK',
+            icon: 'info'
         });
     });
 
+    $('#btnSalvar').click(function () {
+        if ($('#form').valid()) {
+            let chamado = SerielizeForm($('#form'));
+            let url = $('#form').attr('action');
+
+            $.ajax({
+                type: "PUT",
+                url: url,
+                data: chamado,
+                success: function (result) {
+                    Swal.fire({
+                        type: result.Type,
+                        title: result.Title,
+                        text: result.Message,
+                    }).then(function () {
+                        window.location.href = config.contextPath + result.Controller + '/' + result.Action;
+                    });
+                },
+                error: function (result) {
+                    Swal.fire({
+                        text: result,
+                        confirmButtonText: 'OK',
+                        icon: 'error'
+                    });
+                },
+            });
+        }
+    });
 });

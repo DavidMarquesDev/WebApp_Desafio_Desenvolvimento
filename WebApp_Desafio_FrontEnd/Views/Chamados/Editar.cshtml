@@ -18,14 +18,20 @@
             <div class="row">
                 <div class="form-group col-lg-7 col-md-6 col-sm-12">
                     <label class="form-label" asp-for="Assunto"></label>
-                    <input type="text" class="form-control" asp-for="Assunto">
+                    <input type="text" class="form-control" asp-for="Assunto" maxlength="30">
                     <span class="text-danger" asp-validation-for="Assunto"></span>
                 </div>
             </div>
             <div class="row">
                 <div class="form-group col-lg-7 col-md-6 col-sm-12">
                     <label class="form-label" asp-for="Solicitante"></label>
-                    <input type="text" class="form-control" asp-for="Solicitante">
+                    <select class="form-control" asp-for="Solicitante">
+                        <option value="">Selecione um Solicitante</option>
+                        @foreach (var solicitante in ViewData["ListaSolicitantes"] as List<SolicitantesViewModel>)
+                        {
+                            <option value="@solicitante.Solicitante">@solicitante.Solicitante</option>
+                        }
+                    </select>
                     <span class="text-danger" asp-validation-for="Solicitante"></span>
                 </div>
             </div>
@@ -50,11 +56,11 @@
                 </div>
             </div>
             <div class="row">
-                <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                <div class="form-group col-lg-2 col-md-6 col-sm-12">
                     <label class="form-label" asp-for="DataAbertura"></label>
 
                     <div class="input-group date" data-provide="datepicker">
-                        <input type="text" class="form-control" asp-for="DataAbertura" asp-format="{0:dd/MM/yyyy}" />
+                        <input type="text" class="form-control" asp-for="DataAbertura" asp-format="{0:dd/MM/yyyy}" style="pointer-events: none;" />
                         <div class="input-group-addon">
                             <span class="glyphicon glyphicon-calendar"></span>
                         </div>
@@ -72,7 +78,6 @@
         <div class="row">
             <div class="form-group col-sm-12 text-right float-right mb-0">
                 <button type="button" id="btnCancelar" class="btn btn-outline btn-default" data-style="slide-left">Cancelar Edição</button>
-                @*<button type="button" id="btnExcluir" class="btn btn-outline btn-danger" data-style="slide-left">Excluir</button>*@
                 <button type="button" id="btnSalvar" class="btn btn-outline btn-primary" data-style="slide-left">Salvar Edição</button>
             </div>
         </div>
@@ -82,8 +87,6 @@
 @section styles
     {
     <link rel="stylesheet" href="~/lib/sweetalert2/sweetalert2.min.css" />
-    @*<link rel="stylesheet" href="~/lib/bootstrap-datepicker/css/bootstrap-datepicker.min.css" />*@
-    @*<link rel="stylesheet" href="~/lib/bootstrap-datepicker/css/bootstrap-datepicker3.min.css" />*@
 }
 
 @section scripts

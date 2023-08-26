@@ -17,10 +17,12 @@ namespace WebApp_Desafio_FrontEnd.ViewModels
 
         [Display(Name = "Assunto")]
         [DataMember(Name = "Assunto")]
+        [MaxLength(30, ErrorMessage = "O campo Assunto não pode ter mais de 30 caracteres entendido.")]
         public string Assunto { get; set; }
 
         [Display(Name = "Solicitante")]
         [DataMember(Name = "Solicitante")]
+        [MaxLength(30, ErrorMessage = "O campo Solicitante não pode ter mais de 30 caracteres.")]
         public string Solicitante { get; set; }
 
         [Display(Name = "IdDepartamento")]
@@ -34,17 +36,17 @@ namespace WebApp_Desafio_FrontEnd.ViewModels
         [Display(Name = "DataAbertura")]
         [DataMember(Name = "DataAbertura")]
         public DateTime DataAbertura { get; set; }
-
+        
         [DataMember(Name = "DataAberturaWrapper")]
         public string DataAberturaWrapper
         {
             get
             {
-                return DataAbertura.ToString("d", ptBR);
+                return DataAbertura.ToString("dd/MM/yyyy", ptBR);
             }
             set
             {
-                DataAbertura = DateTime.Parse(value, ptBR);
+                DataAbertura = DateTime.ParseExact(value, "dd/MM/yyyy", ptBR);
             }
         }
     }

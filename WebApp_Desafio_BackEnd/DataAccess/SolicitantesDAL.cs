@@ -9,36 +9,40 @@ using WebApp_Desafio_BackEnd.Models;
 
 namespace WebApp_Desafio_BackEnd.DataAccess
 {
-    public class DepartamentosDAL : BaseDAL
+    public class SolicitanteDAL : BaseDAL
     {
         private const string ANSI_DATE_FORMAT = "yyyy-MM-dd";
-        public IEnumerable<Departamento> ListarDepartamentos()
+        public IEnumerable<Solicitantes> ListarSolicitantes()
         {
-            IList<Departamento> lstDepartamentos = new List<Departamento>();
+            IList<Solicitantes> lstSolicitantes = new List<Solicitantes>();
 
             using (SQLiteConnection dbConnection = new SQLiteConnection(CONNECTION_STRING))
             {
                 using (SQLiteCommand dbCommand = dbConnection.CreateCommand())
                 {
 
-                    dbCommand.CommandText = "SELECT ID, Descricao FROM departamentos ";
+                    dbCommand.CommandText = "SELECT ID, Solicitante, Cpf,DataCriacao FROM Solicitantes ";
 
                     dbConnection.Open();
 
                     using (SQLiteDataReader dataReader = dbCommand.ExecuteReader())
                     {
-                        var departamento = Departamento.Empty;
+                        var solicitante = Solicitantes.Empty;
 
                         while (dataReader.Read())
                         {
-                            departamento = new Departamento();
+                            solicitante = new Solicitantes();
 
                             if (!dataReader.IsDBNull(0))
-                                departamento.ID = dataReader.GetInt32(0);
+                                solicitante.ID = dataReader.GetInt32(0);
                             if (!dataReader.IsDBNull(1))
-                                departamento.Descricao = dataReader.GetString(1);
+                                solicitante.Solicitante = dataReader.GetString(1);
+                            if (!dataReader.IsDBNull(2))
+                                solicitante.Cpf = dataReader.GetString(2);
+                            if (!dataReader.IsDBNull(3))
+                                solicitante.DataCriacao = dataReader.GetDateTime(3);
 
-                            lstDepartamentos.Add(departamento);
+                            lstSolicitantes.Add(solicitante);
                         }
                         dataReader.Close();
                     }
@@ -47,24 +51,26 @@ namespace WebApp_Desafio_BackEnd.DataAccess
 
             }
 
-            return lstDepartamentos;
+            return lstSolicitantes;
         }
 
-        public Departamento ObterDepartamento(int idDepartamento)
+        public Solicitantes ObterSolicitantes(int idSolicitantes)
         {
-            var departamento = Departamento.Empty;
+            var solicitante = Solicitantes.Empty;
 
-            DataTable dtDepartamentos = new DataTable();
+            DataTable dtSolicitantes = new DataTable();
 
             using (SQLiteConnection dbConnection = new SQLiteConnection(CONNECTION_STRING))
             {
                 using (SQLiteCommand dbCommand = dbConnection.CreateCommand())
                 {
                     dbCommand.CommandText =
-                        "SELECT departamentos.ID, " +
-                        "       departamentos.Descricao " +
-                        "FROM departamentos " +
-                        $"WHERE departamentos.ID = {idDepartamento}";
+                        "SELECT Solicitantes.ID, " +
+                        "       Solicitantes.Solicitante, " +
+                        "       Solicitantes.Cpf, " +
+                        "       Solicitantes.DataCriacao " +
+                        "FROM Solicitantes " +
+                        $"WHERE Solicitantes.ID = {idSolicitantes}";
 
                     dbConnection.Open();
 
@@ -72,12 +78,16 @@ namespace WebApp_Desafio_BackEnd.DataAccess
                     {
                         if (dataReader.Read())
                         {
-                            departamento = new Departamento();
+                            solicitante = new Solicitantes();
 
                             if (!dataReader.IsDBNull(0))
-                                departamento.ID = dataReader.GetInt32(0);
+                                solicitante.ID = dataReader.GetInt32(0);
                             if (!dataReader.IsDBNull(1))
-                                departamento.Descricao = dataReader.GetString(1);
+                                solicitante.Solicitante = dataReader.GetString(1);
+                            if (!dataReader.IsDBNull(2))
+                                solicitante.Cpf = dataReader.GetString(2);
+                            if (!dataReader.IsDBNull(3))
+                                solicitante.DataCriacao = dataReader.GetDateTime(3);
                         }
                         dataReader.Close();
                     }
@@ -86,10 +96,9 @@ namespace WebApp_Desafio_BackEnd.DataAccess
 
             }
 
-            return departamento;
+            return solicitante;
         }
-
-        public bool GravarDepartamento(int ID, string Descricao)
+        public bool GravarSolicitantes(string Solicitante, string CpfSolicitante)
         {
             int regsAfetados = -1;
 
@@ -97,24 +106,50 @@ namespace WebApp_Desafio_BackEnd.DataAccess
             {
                 using (SQLiteCommand dbCommand = dbConnection.CreateCommand())
                 {
-                        dbCommand.CommandText =
-                            "INSERT INTO departamentos (Descricao)" +
-                            "VALUES (@Descricao)";
+                    dbCommand.CommandText =
+                        "INSERT INTO Solicitantes (Solicitante, Cpf, DataCriacao)" +
+                        "VALUES (@Solicitante, @Cpf, DATETIME('now'))";
 
-                    dbCommand.Parameters.AddWithValue("@Descricao", Descricao);
+                    dbCommand.Parameters.AddWithValue("@Solicitante", Solicitante);
+                    dbCommand.Parameters.AddWithValue("@Cpf", CpfSolicitante);
+
+                    dbConnection.Open();
+                    regsAfetados = dbCommand.ExecuteNonQuery();
+                    dbConnection.Close();
+                }
+            }
+
+            return (regsAfetados > 0);
+        }
+
+
+        public bool EditarSolicitantes(int ID, string Solicitante, string CpfSolicitante)
+        {
+            int regsAfetados = -1;
+
+            using (SQLiteConnection dbConnection = new SQLiteConnection(CONNECTION_STRING))
+            {
+                using (SQLiteCommand dbCommand = dbConnection.CreateCommand())
+                {
+                    dbCommand.CommandText =
+                        "UPDATE Solicitantes " +
+                        "SET Solicitante=@Solicitante, Cpf=@Cpf " +
+                        "WHERE ID=@ID ";
+
+                    dbCommand.Parameters.AddWithValue("@Solicitante", Solicitante);
+                    dbCommand.Parameters.AddWithValue("@Cpf", CpfSolicitante);
                     dbCommand.Parameters.AddWithValue("@ID", ID);
 
                     dbConnection.Open();
                     regsAfetados = dbCommand.ExecuteNonQuery();
                     dbConnection.Close();
                 }
-
             }
 
             return (regsAfetados > 0);
-
         }
-        public bool EditarDepartamento(int ID, string Descricao)
+
+        public bool ExcluirSolicitantes(int idSolicitante)
         {
             int regsAfetados = -1;
 
@@ -122,44 +157,16 @@ namespace WebApp_Desafio_BackEnd.DataAccess
             {
                 using (SQLiteCommand dbCommand = dbConnection.CreateCommand())
                 {
-                        dbCommand.CommandText =
-                            "UPDATE departamentos " +
-                            "SET Descricao=@Descricao " +
-                            "WHERE ID=@ID ";
-
-                    dbCommand.Parameters.AddWithValue("@Descricao", Descricao);
-                    dbCommand.Parameters.AddWithValue("@ID", ID);
+                    dbCommand.CommandText = $"DELETE FROM Solicitantes WHERE ID = {idSolicitante}";
 
                     dbConnection.Open();
                     regsAfetados = dbCommand.ExecuteNonQuery();
                     dbConnection.Close();
                 }
-
-            }
-
-            return (regsAfetados > 0);
-
-        }
-
-        public bool ExcluirDepartamento(int idDepartamento)
-        {
-            int regsAfetados = -1;
-
-            using (SQLiteConnection dbConnection = new SQLiteConnection(CONNECTION_STRING))
-            {
-                using (SQLiteCommand dbCommand = dbConnection.CreateCommand())
-                {
-                    dbCommand.CommandText = $"DELETE FROM departamentos WHERE ID = {idDepartamento}";
-
-                    dbConnection.Open();
-                    regsAfetados = dbCommand.ExecuteNonQuery();
-                    dbConnection.Close();
-
-                }
-
             }
 
             return (regsAfetados > 0);
         }
+
     }
 }

@@ -51,6 +51,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>dsChamados.xsd</DependentUpon>
     </Compile>
+    <Compile Include="dsSolicitantes.Designer.cs">
+      <DependentUpon>dsSolicitantes.xsd</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="dsDepartamentos.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -73,6 +78,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="rptSolicitantes.rdlc" />
     <EmbeddedResource Include="rptChamados.rdlc" />
     <EmbeddedResource Include="rptDepartamentos.rdlc" />
     <None Include="dsChamados.xsc">
@@ -85,6 +91,17 @@
     </None>
     <None Include="dsChamados.xss">
       <DependentUpon>dsChamados.xsd</DependentUpon>
+    </None>
+    <None Include="dsSolicitantes.xsc">
+      <DependentUpon>dsSolicitantes.xsd</DependentUpon>
+    </None>
+    <None Include="dsSolicitantes.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>dsSolicitantes.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="dsSolicitantes.xss">
+      <DependentUpon>dsSolicitantes.xsd</DependentUpon>
     </None>
     <None Include="dsDepartamentos.xsc">
       <DependentUpon>dsDepartamentos.xsd</DependentUpon>

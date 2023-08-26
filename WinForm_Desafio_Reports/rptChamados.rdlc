@@ -325,7 +325,9 @@
                           <TextRuns>
                             <TextRun>
                               <Value>=Fields!DataAbertura.Value</Value>
-                              <Style />
+                              <Style>
+                                <Format>dd/MM/yyyy</Format>
+                              </Style>
                             </TextRun>
                           </TextRuns>
                           <Style />
@@ -343,6 +345,7 @@
                         <PaddingBottom>2pt</PaddingBottom>
                       </Style>
                     </Textbox>
+                    <rd:Selected>true</rd:Selected>
                   </CellContents>
                 </TablixCell>
               </TablixCells>

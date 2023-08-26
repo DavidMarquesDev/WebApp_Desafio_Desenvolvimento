@@ -1,0 +1,10 @@
+﻿/* Custom.css */
+
+body {
+    /* Adicione qualquer estilo que você deseja aplicar ao corpo do documento */
+}
+
+.clickable-label {
+    cursor: pointer;
+    text-decoration: underline;
+}

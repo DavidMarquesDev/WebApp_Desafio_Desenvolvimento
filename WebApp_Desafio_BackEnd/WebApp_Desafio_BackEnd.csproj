@@ -80,11 +80,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Business\ChamadosBLL.cs" />
+    <Compile Include="Business\SolicitantessBLL.cs" />
     <Compile Include="Business\DepartamentosBLL.cs" />
     <Compile Include="DataAccess\BaseDAL.cs" />
+    <Compile Include="DataAccess\SolicitantesDAL.cs" />
     <Compile Include="DataAccess\DepartamentosDAL.cs" />
     <Compile Include="DataAccess\ChamadosDAL.cs" />
     <Compile Include="Models\Chamado.cs" />
+    <Compile Include="Models\Solicitantes.cs" />
     <Compile Include="Models\Departamento.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

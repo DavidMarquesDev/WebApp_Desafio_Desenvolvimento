@@ -35,17 +35,29 @@ namespace WebApp_Desafio_FrontEnd.Controllers
         }
 
         [HttpGet]
-        public IActionResult Datatable()
+        public IActionResult Datatable(int draw, int start, int length, string search)
         {
             try
             {
                 var departamentosApiClient = new DepartamentosApiClient();
                 var lstDepartamentos = departamentosApiClient.DepartamentosListar();
 
+                if (!string.IsNullOrEmpty(search))
+                {
+                    search = search.ToLower();
+                    lstDepartamentos = lstDepartamentos
+                        .Where(s => s.Descricao.ToLower().Contains(search))
+                        .ToList();
+                }
+
+                var paginatedData = lstDepartamentos.Skip(start).Take(length).ToList();
+
                 var dataTableVM = new DataTableAjaxViewModel()
                 {
-                    length = lstDepartamentos.Count,
-                    data = lstDepartamentos
+                    draw = draw,
+                    recordsTotal = lstDepartamentos.Count,
+                    recordsFiltered = lstDepartamentos.Count, 
+                    data = paginatedData
                 };
 
                 return Ok(dataTableVM);
@@ -169,12 +181,9 @@ namespace WebApp_Desafio_FrontEnd.Controllers
             int extension = 1;
             string contentRootPath = _hostEnvironment.ContentRootPath;
             string path = Path.Combine(contentRootPath, "wwwroot", "reports", "rptDepartamentos.rdlc");
-            //
-            // ... parameters
-            //
+            
             LocalReport localReport = new LocalReport(path);
 
-            // Carrega os dados que serão apresentados no relatório
             var departamentosApiClient = new DepartamentosApiClient();
             var lstDepartamentos = departamentosApiClient.DepartamentosListar();
 

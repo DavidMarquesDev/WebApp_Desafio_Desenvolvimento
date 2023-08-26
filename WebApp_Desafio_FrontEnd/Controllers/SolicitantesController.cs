@@ -9,14 +9,15 @@ using WebApp_Desafio_FrontEnd.ViewModels;
 using WebApp_Desafio_FrontEnd.ViewModels.Enums;
 using AspNetCore.Reporting;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Infrastructure;
+using Newtonsoft.Json.Linq;
 
 namespace WebApp_Desafio_FrontEnd.Controllers
 {
-    public class ChamadosController : Controller
+    public class SolicitantesController : Controller
     {
         private readonly IHostingEnvironment _hostEnvironment;
 
-        public ChamadosController(IHostingEnvironment hostEnvironment)
+        public SolicitantesController(IHostingEnvironment hostEnvironment)
         {
             _hostEnvironment = hostEnvironment;
         }
@@ -39,26 +40,24 @@ namespace WebApp_Desafio_FrontEnd.Controllers
         {
             try
             {
-                var chamadosApiClient = new ChamadosApiClient();
-                var lstChamados = chamadosApiClient.ChamadosListar();
+                var solicitantesApiClient = new SolicitantesApiClient();
+                var lstSolicitantes = solicitantesApiClient.SolicitantesListar();
 
-                // Aplicar pesquisa do filtro
                 if (!string.IsNullOrEmpty(search))
                 {
                     search = search.ToLower();
-                    lstChamados = lstChamados
+                    lstSolicitantes = lstSolicitantes
                         .Where(s => s.Solicitante.ToLower().Contains(search))
                         .ToList();
                 }
 
-                // Implementar lógica de paginação
-                var paginatedData = lstChamados.Skip(start).Take(length).ToList();
+                var paginatedData = lstSolicitantes.Skip(start).Take(length).ToList();
 
                 var dataTableVM = new DataTableAjaxViewModel()
                 {
                     draw = draw,
-                    recordsTotal = lstChamados.Count,
-                    recordsFiltered = lstChamados.Count, 
+                    recordsTotal = lstSolicitantes.Count,
+                    recordsFiltered = lstSolicitantes.Count, 
                     data = paginatedData
                 };
 
@@ -70,21 +69,20 @@ namespace WebApp_Desafio_FrontEnd.Controllers
             }
         }
 
+
         [HttpGet]
         public IActionResult Cadastrar()
         {
-            var chamadoVM = new ChamadoViewModel()
+            var solicitantesVM = new SolicitantesViewModel()
             {
-                DataAbertura = DateTime.Now
+                DataCriacao = DateTime.Now
             };
-            ViewData["Title"] = "Cadastrar Novo Chamado";
+            ViewData["Title"] = "Cadastrar Novo Solicitante";
 
             try
             {
-                var departamentosApiClient = new DepartamentosApiClient();
                 var solicitantesApiClient = new SolicitantesApiClient();
 
-                ViewData["ListaDepartamentos"] = departamentosApiClient.DepartamentosListar();
                 ViewData["ListaSolicitantes"] = solicitantesApiClient.SolicitantesListar();
             }
             catch (Exception ex)
@@ -92,26 +90,39 @@ namespace WebApp_Desafio_FrontEnd.Controllers
                 ViewData["Error"] = ex.Message;
             }
 
-            return View("Cadastrar", chamadoVM);
+            return View("Cadastrar", solicitantesVM);
         }
 
         [HttpPost]
-        public IActionResult Cadastrar(ChamadoViewModel chamadoVM)
+        public IActionResult Cadastrar(SolicitantesViewModel solicitantesVM)
         {
             ViewData["Title"] = "Cadastrar Novo Chamado";
             try
             {
-                var chamadosApiClient = new ChamadosApiClient();
-                var realizadoComSucesso = chamadosApiClient.ChamadoGravar(chamadoVM);
+                var solicitantesApiClient = new SolicitantesApiClient();
+
+                var lstSolicitantes = solicitantesApiClient.SolicitantesListar();
+                var cpfExistente = lstSolicitantes.Any(s => s.CPF == solicitantesVM.CPF);
+
+                if (cpfExistente)
+                {
+                    return Ok(new ResponseViewModel(
+                                $"Já existe esse CPF cadastrado!",
+                                AlertTypes.error,
+                                this.RouteData.Values["controller"].ToString(),
+                                nameof(this.Cadastrar)));
+                }
+
+                var realizadoComSucesso = solicitantesApiClient.SolicitantesGravar(solicitantesVM);
 
                 if (realizadoComSucesso)
                     return Ok(new ResponseViewModel(
-                                $"Chamado gravado com sucesso!",
+                                $"Solicitante gravado com sucesso!",
                                 AlertTypes.success,
                                 this.RouteData.Values["controller"].ToString(),
                                 nameof(this.Listar)));
                 else
-                    throw new ApplicationException($"Falha ao excluir o Chamado.");
+                    throw new ApplicationException($"Falha ao excluir o Solicitante.");
             }
             catch (Exception ex)
             {
@@ -119,22 +130,19 @@ namespace WebApp_Desafio_FrontEnd.Controllers
             }
         }
 
+
+
+
         [HttpGet]
         public IActionResult Editar([FromRoute] int id)
         {
-            ViewData["Title"] = "Editar o Chamado";
+            ViewData["Title"] = "Editar o Solicitante";
             try
             {
-                var chamadosApiClient = new ChamadosApiClient();
-                var chamadoVM = chamadosApiClient.ChamadoObter(id);
-
-                var departamentosApiClient = new DepartamentosApiClient();
                 var solicitantesApiClient = new SolicitantesApiClient();
+                var solicitantesVM = solicitantesApiClient.SolicitantesObter(id);
 
-                ViewData["ListaDepartamentos"] = departamentosApiClient.DepartamentosListar();
-                ViewData["ListaSolicitantes"] = solicitantesApiClient.SolicitantesListar();
-
-                return View("Editar", chamadoVM);
+                return View("Editar", solicitantesVM);
             }
             catch (Exception ex)
             {
@@ -143,16 +151,16 @@ namespace WebApp_Desafio_FrontEnd.Controllers
         }
 
         [HttpPut]
-        public IActionResult Editar(ChamadoViewModel chamadoVM)
+        public IActionResult Editar(SolicitantesViewModel solicitantesVM)
         {
             try
             {
-                var chamadosApiClient = new ChamadosApiClient();
-                var realizadoComSucesso = chamadosApiClient.ChamadoEditar(chamadoVM);
+                var solicitantesApiClient = new SolicitantesApiClient();
+                var realizadoComSucesso = solicitantesApiClient.SolicitantesEditar(solicitantesVM);
 
                 if (realizadoComSucesso)
                     return Ok(new ResponseViewModel(
-                                $"Chamado gravado com sucesso!",
+                                $"Solicitante gravado com sucesso!",
                                 AlertTypes.success,
                                 this.RouteData.Values["controller"].ToString(),
                                 nameof(this.Listar)));
@@ -170,12 +178,12 @@ namespace WebApp_Desafio_FrontEnd.Controllers
         {
             try
             {
-                var chamadosApiClient = new ChamadosApiClient();
-                var realizadoComSucesso = chamadosApiClient.ChamadoExcluir(id);
+                var solicitantesApiClient = new SolicitantesApiClient();
+                var realizadoComSucesso = solicitantesApiClient.SolicitantesExcluir(id);
 
                 if (realizadoComSucesso)
                     return Ok(new ResponseViewModel(
-                                $"Chamado {id} excluído com sucesso!",
+                                $"Solicitacao {id} excluído com sucesso!",
                                 AlertTypes.success,
                                 "Chamados",
                                 nameof(Listar)));
@@ -187,16 +195,19 @@ namespace WebApp_Desafio_FrontEnd.Controllers
                 return BadRequest(new ResponseViewModel(ex));
             }
         }
+
         [HttpPost]
-        public IActionResult PesquisarChamados(string solicitante)
+        public IActionResult PesquisarSolicitantes(string solicitante)
         {
             try
             {
-                var chamadosApiClient = new ChamadosApiClient();
-                var lstChamados = chamadosApiClient.ChamadosListar(); if (!string.IsNullOrEmpty(solicitante))
+                var solicitantesApiClient = new SolicitantesApiClient();
+                var lstSolicitantes = solicitantesApiClient.SolicitantesListar();
+
+                if (!string.IsNullOrEmpty(solicitante))
                 {
-                    solicitante = solicitante.ToLower(); // Converter o termo de pesquisa para minúsculas
-                    lstChamados = lstChamados
+                    solicitante = solicitante.ToLower(); 
+                    lstSolicitantes = lstSolicitantes
                         .Where(c => c.Solicitante.ToLower().Contains(solicitante))
                         .ToList();
                 }
@@ -204,9 +215,9 @@ namespace WebApp_Desafio_FrontEnd.Controllers
                 var dataTableVM = new DataTableAjaxViewModel()
                 {
                     draw = 1,
-                    recordsTotal = lstChamados.Count,
-                    recordsFiltered = lstChamados.Count, 
-                    data = lstChamados
+                    recordsTotal = lstSolicitantes.Count,
+                    recordsFiltered = lstSolicitantes.Count, 
+                    data = lstSolicitantes
                 };
 
                 return Ok(dataTableVM);
@@ -218,27 +229,27 @@ namespace WebApp_Desafio_FrontEnd.Controllers
         }
 
 
+
         [HttpGet]
         public IActionResult Report()
         {
             string mimeType = string.Empty;
             int extension = 1;
             string contentRootPath = _hostEnvironment.ContentRootPath;
-            string path = Path.Combine(contentRootPath, "wwwroot", "reports", "rptChamados.rdlc");
+            string path = Path.Combine(contentRootPath, "wwwroot", "reports", "rptSolicitantes.rdlc");
             
             LocalReport localReport = new LocalReport(path);
 
-            // Carrega os dados que serão apresentados no relatório
-            var chamadosApiClient = new ChamadosApiClient();
-            var lstChamados = chamadosApiClient.ChamadosListar();
+            var solicitantesApiClient = new SolicitantesApiClient();
+            var lstSolicitantes = solicitantesApiClient.SolicitantesListar();
 
-            localReport.AddDataSource("dsChamados", lstChamados);
+            localReport.AddDataSource("dsSolicitantes", lstSolicitantes);
 
             // Renderiza o relatório em PDF
             ReportResult reportResult = localReport.Execute(RenderType.Pdf);
 
             //return File(reportResult.MainStream, "application/pdf");
-            return File(reportResult.MainStream, "application/octet-stream", "rptChamados.pdf");
+            return File(reportResult.MainStream, "application/octet-stream", "rptSolicitantes.pdf");
         }
 
     }

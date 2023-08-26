@@ -9,7 +9,7 @@
               <Width>2.5cm</Width>
             </TablixColumn>
             <TablixColumn>
-              <Width>8.10917cm</Width>
+              <Width>7.62233cm</Width>
             </TablixColumn>
           </TablixColumns>
           <TablixRows>
@@ -121,7 +121,6 @@
                   <CellContents>
                     <Textbox Name="Descricao">
                       <CanGrow>true</CanGrow>
-                      <CanShrink>true</CanShrink>
                       <KeepTogether>true</KeepTogether>
                       <Paragraphs>
                         <Paragraph>
@@ -172,7 +171,7 @@
         <Top>0.17639cm</Top>
         <Left>4.2037cm</Left>
         <Height>1.2cm</Height>
-        <Width>10.60917cm</Width>
+        <Width>10.12233cm</Width>
         <Style>
           <Border>
             <Style>None</Style>

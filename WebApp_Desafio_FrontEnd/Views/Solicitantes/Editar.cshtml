@@ -1,4 +1,4 @@
-﻿@model WebApp_Desafio_FrontEnd.ViewModels.DepartamentoViewModel
+﻿@model WebApp_Desafio_FrontEnd.ViewModels.SolicitantesViewModel
 
 @using WebApp_Desafio_FrontEnd.ViewModels
 
@@ -17,11 +17,32 @@
 
             <div class="row">
                 <div class="form-group col-lg-7 col-md-6 col-sm-12">
-                    <label class="form-label" asp-for="Descricao"></label>
-                    <input type="text" class="form-control" asp-for="Descricao" maxlength="30">
-                    <span class="text-danger" asp-validation-for="Descricao"></span>
+                    <label class="form-label" asp-for="Solicitante"></label>
+                    <input type="text" class="form-control" asp-for="Solicitante" maxlength="30">
+                    <span class="text-danger" asp-validation-for="Solicitante"></span>
                 </div>
             </div>
+            <div class="row">
+                <div class="form-group col-lg-2 col-md-6 col-sm-12">
+                    <label class="form-label" asp-for="CPF"></label>
+                    <input type="text" class="form-control" asp-for="CPF">
+                    <span class="text-danger" asp-validation-for="CPF"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-lg-2 col-md-6 col-sm-12">
+                    <label class="form-label" asp-for="DataCriacao" style="pointer-events: none;">Data de Criação</label>
+
+                    <div class="input-group date" data-provide="datepicker">
+                        <input type="text" class="form-control" asp-for="DataCriacao" asp-format="{0:dd/MM/yyyy}" style="pointer-events: none;" />
+                        <div class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </div>
+                    </div>
+                    <span class="text-danger" asp-validation-for="DataCriacao"></span>
+                </div>
+            </div>
+
         </form>
     </div>
 </div>
@@ -52,5 +73,10 @@
 
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
 
-    <script src="~/js/Departamentos/Editar.js" asp-append-version="true"></script>
+    <!-- Mascara de CPF -->
+    <script src="~/lib/jQuery-Mask-Plugin-master/dist/jquery.mask.js"></script>
+
+    <script src="~/js/Solicitantes/Editar.js" asp-append-version="true"></script>
+
+    
 }

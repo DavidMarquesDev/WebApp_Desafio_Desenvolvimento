@@ -1,17 +1,45 @@
 ﻿$(document).ready(function () {
 
     var table = $('#dataTables-Departamentos').DataTable({
-        paging: false,
-        ordering: false,
-        info: false,
-        searching: false,
+        paging: true,
         processing: true,
         serverSide: true,
-        ajax: config.contextPath + 'Departamentos/Datatable',
+        searching: false,
+        ordering: true,
+        ajax: {
+            url: config.contextPath + 'Departamentos/Datatable',
+            type: 'GET',
+            data: function (d) {
+                d.search = $('#PesquisarSolicitante').val();
+            }
+        },
         columns: [
             { data: 'ID' },
-            { data: 'Descricao', title: 'Descrição' },
+            { data: 'Descricao' },
         ],
+        language: {
+            "sEmptyTable": "Nenhum registro encontrado",
+            "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+            "sInfoEmpty": "Mostrando 0 até 0 de 0 registros",
+            "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+            "sInfoPostFix": "",
+            "sInfoThousands": ".",
+            "sLengthMenu": "_MENU_ resultados por página",
+            "sLoadingRecords": "Carregando...",
+            "sProcessing": "Processando...",
+            "sSearch": "Pesquisar:",
+            "sZeroRecords": "Nenhum registro encontrado",
+            "oPaginate": {
+                "sFirst": "Primeiro",
+                "sLast": "Último",
+                "sNext": "Próximo",
+                "sPrevious": "Anterior"
+            },
+            "oAria": {
+                "sSortAscending": ": Ordenar colunas de forma ascendente",
+                "sSortDescending": ": Ordenar colunas de forma descendente"
+            }
+        }
     });
 
     $('#dataTables-Departamentos tbody').on('click', 'tr', function () {
@@ -31,9 +59,14 @@
         window.location.href = config.contextPath + 'Departamentos/Cadastrar';
     });
 
-    $('#btnEditar').click(function () {
+    var editDoubleClickTimeout;
+    $('#btnEditar').on('click', function () {
+    }).on('dblclick', function () {
+        clearTimeout(editDoubleClickTimeout); 
         var data = table.row('.selected').data();
-        window.location.href = config.contextPath + 'Departamentos/Editar/' + data.ID;
+        if (data) {
+            window.location.href = config.contextPath + 'Departamentos/Editar/' + data.ID;
+        }
     });
 
     $('#btnExcluir').click(function () {

@@ -1,26 +1,23 @@
 ﻿$(document).ready(function () {
 
-    var table = $('#dataTables-Chamados').DataTable({
+    var table = $('#dataTables-Solicitantes').DataTable({
         paging: true,
         processing: true,
         serverSide: true,
         searching: false,
         ordering: true,
         ajax: {
-            url: config.contextPath + 'Chamados/Datatable',
+            url: config.contextPath + 'Solicitantes/Datatable',
             type: 'GET',
             data: function (d) {
                 d.search = $('#PesquisarSolicitante').val();
-            },
-            dataSrc: 'data', // Indica onde estão os dados dentro do objeto retornado
-
+            }
         },
         columns: [
             { data: 'ID' },
-            { data: 'Assunto' },
             { data: 'Solicitante' },
-            { data: 'Departamento' },
-            { data: 'DataAberturaWrapper', title: 'Data Criação' },
+            { data: 'CPF' },
+            { data: 'DataCriacaoWrapper', title: 'Data Criacao' },
         ],
         language: {
             "sEmptyTable": "Nenhum registro encontrado",
@@ -47,8 +44,7 @@
         }
     });
 
-
-    $('#dataTables-Chamados tbody').on('click', 'tr', function () {
+    $('#dataTables-Solicitantes tbody').on('click', 'tr', function () {
         if ($(this).hasClass('selected')) {
             $(this).removeClass('selected');
         } else {
@@ -58,11 +54,11 @@
     });
 
     $('#btnRelatorio').click(function () {
-        window.location.href = config.contextPath + 'Chamados/Report';
+        window.location.href = config.contextPath + 'Solicitantes/Report';
     });
 
     $('#btnAdicionar').click(function () {
-        window.location.href = config.contextPath + 'Chamados/Cadastrar';
+        window.location.href = config.contextPath + 'Solicitantes/Cadastrar';
     });
 
     var editDoubleClickTimeout;
@@ -71,7 +67,7 @@
         clearTimeout(editDoubleClickTimeout);
         var data = table.row('.selected').data();
         if (data) {
-            window.location.href = config.contextPath + 'Chamados/Editar/' + data.ID;
+            window.location.href = config.contextPath + 'Solicitantes/Editar/' + data.ID;
         }
     });
 
@@ -85,14 +81,14 @@
 
         if (idRegistro) {
             Swal.fire({
-                text: "Tem certeza de que deseja excluir " + data.Assunto + " ?",
+                text: "Tem certeza de que deseja excluir " + data.Solicitante + " ?",
                 type: "warning",
                 showCancelButton: true,
             }).then(function (result) {
 
                 if (result.value) {
                     $.ajax({
-                        url: config.contextPath + 'Chamados/Excluir/' + idRegistro,
+                        url: config.contextPath + 'Solicitantes/Excluir/' + idRegistro,
                         type: 'DELETE',
                         contentType: 'application/json',
                         error: function (result) {
@@ -126,7 +122,7 @@
     $('#PesquisarSolicitante').on('keyup', function () {
         var inputText = $(this).val();
         $.ajax({
-            url: config.contextPath + 'Chamados/PesquisarChamados',
+            url: config.contextPath + 'Solicitantes/PesquisarSolicitantes',
             type: 'POST',
             data: { solicitante: inputText },
             success: function (data) {
@@ -137,4 +133,5 @@
             }
         });
     });
+
 });

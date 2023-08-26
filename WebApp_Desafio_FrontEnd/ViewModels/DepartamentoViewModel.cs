@@ -15,6 +15,7 @@ namespace WebApp_Desafio_FrontEnd.ViewModels
 
         [Display(Name = "Descricao")]
         [DataMember(Name = "Descricao")]
+        [MaxLength(30, ErrorMessage = "O campo Descrição não pode ter mais de 30 caracteres.")]
         public string Descricao { get; set; }
 
     }

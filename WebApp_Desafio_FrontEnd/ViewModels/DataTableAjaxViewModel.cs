@@ -11,5 +11,8 @@
         public int start { get; set; }
         public int length { get; set; }
         public object data { get; set; }
+        public int draw { get; internal set; }
+        public int recordsTotal { get; internal set; }
+        public int recordsFiltered { get; internal set; }
     }
 }
